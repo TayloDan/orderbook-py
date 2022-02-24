@@ -1,5 +1,6 @@
 from queue import PriorityQueue
 import time
+import sys
 
 class Transaction:
     def __init__(self, units, price, stockID, id="xyz"):
@@ -118,8 +119,10 @@ if __name__ == '__main__':
 
     #Objects Transaction and Response designed with gRPC req/responses in mind
     #A response can have multiple transactions embedded
-
-    with open("test.txt", 'r') as f:
+    if len(sys.argv) == 1:
+        print("Provide input file!")
+        sys.exit(-1)
+    with open(sys.argv[1], 'r') as f:
         for line in f:
             items = line.strip().split(",")
             if items[0] == "A":
