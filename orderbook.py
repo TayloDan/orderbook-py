@@ -3,7 +3,7 @@ import time
 import sys
 
 class Transaction:
-    def __init__(self, units, price, stockID, id="xyz"):
+    def __init__(self, units, price, id, stockID="xyz"):
         self.units=units
         self.price=price
         self.id = id
@@ -70,13 +70,13 @@ def addBuyReq(buyRequest, reqQueue, otherQueue, cancelledSell):
             continue
         if buyRequest.units > otherOrder[2]:
             buyRequest.units -= otherOrder[2]
-            transactions.append(Transaction(units=otherOrder[2], price=buyRequest.price, stockID=buyRequest.stockID))
+            transactions.append(Transaction(units=otherOrder[2], price=buyRequest.price, id=buyRequest.id, stockID=buyRequest.stockID))
             continue
         else:
             otherOrder[2] -= buyRequest.units
             if otherOrder[2] != 0:
                 otherQueue.put(otherOrder)
-            transactions.append(Transaction(units=buyRequest.units, price=buyRequest.price, stockID=buyRequest.stockID))
+            transactions.append(Transaction(units=buyRequest.units, price=buyRequest.price, id=buyRequest.id, stockID=buyRequest.stockID))
             break
     else:
         reqQueue.put([-int(buyRequest.price), buyRequest.id, int(buyRequest.units)])
@@ -94,13 +94,13 @@ def addSellReq(sellRequest, reqQueue, otherQueue, cancelledBuy):
             continue
         if sellRequest.units > otherOrder[2]:
             sellRequest.units -= otherOrder[2]
-            transactions.append(Transaction(units=otherOrder[2], price=-otherOrder[0], stockID=sellRequest.stockID))
+            transactions.append(Transaction(units=otherOrder[2], price=-otherOrder[0], id=otherOrder[1],  stockID=sellRequest.stockID))
             continue
         else:
             otherOrder[2] -= sellRequest.units
             if otherOrder[2] != 0:
                 otherQueue.put(otherOrder)
-            transactions.append(Transaction(units=sellRequest.units, price=-otherOrder[0], stockID=sellRequest.stockID))
+            transactions.append(Transaction(units=sellRequest.units, price=-otherOrder[0], id=otherOrder[1], stockID=sellRequest.stockID))
             break
     else:
         reqQueue.put([sellRequest.price, sellRequest.id, sellRequest.units]) #log(n) operation only triggered is sell not fulfilled
@@ -127,10 +127,10 @@ if __name__ == '__main__':
             items = line.strip().split(",")
             if items[0] == "A":
                 if items[2]=='B':
-                    resp = addBuyReq(Transaction(int(items[3]),float(items[4]),"XYZ", int(items[1])) , buyQueue, sellQueue, cancelledSell)
+                    resp = addBuyReq(Transaction(int(items[3]),float(items[4]),int(items[1]), "XYZ") , buyQueue, sellQueue, cancelledSell)
 
                 else:
-                    resp = addSellReq(Transaction(int(items[3]),float(items[4]),"XYZ", int(items[1])), sellQueue, buyQueue, cancelledBuy)
+                    resp = addSellReq(Transaction(int(items[3]),float(items[4]),int(items[1]), "XYZ"), sellQueue, buyQueue, cancelledBuy)
             else:
                 if items[2] == "B":
                     cancelledBuy[items[1]] = 1
