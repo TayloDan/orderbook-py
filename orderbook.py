@@ -127,10 +127,10 @@ if __name__ == '__main__':
             items = line.strip().split(",")
             if items[0] == "A":
                 if items[2]=='B':
-                    resp = addBuyReq(Transaction(int(items[3]),float(items[4]),"XYZ", items[1]) , buyQueue, sellQueue, cancelledSell)
+                    resp = addBuyReq(Transaction(int(items[3]),float(items[4]),"XYZ", int(items[1])) , buyQueue, sellQueue, cancelledSell)
 
                 else:
-                    resp = addSellReq(Transaction(int(items[3]),float(items[4]),"XYZ", items[1]), sellQueue, buyQueue, cancelledBuy)
+                    resp = addSellReq(Transaction(int(items[3]),float(items[4]),"XYZ", int(items[1])), sellQueue, buyQueue, cancelledBuy)
             else:
                 if items[2] == "B":
                     cancelledBuy[items[1]] = 1
