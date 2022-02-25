@@ -118,6 +118,7 @@ if __name__ == '__main__':
     cancelledSell = {} #add an extra layer of nesting if expanding to multiple stockID change logic accordingly
 
     #Objects Transaction and Response designed with gRPC req/responses in mind
+    #gRPC server/client ommited from submission due to performance cost of serialization/deserialization
     #A response can have multiple transactions embedded
     if len(sys.argv) == 1:
         print("Provide input file!")
