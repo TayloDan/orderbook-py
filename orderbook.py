@@ -65,7 +65,7 @@ def addBuyReq(buyRequest, reqQueue, otherQueue, cancelledSell):
     while len(otherQueue.queue) and buyRequest.price >= otherQueue.queue[0][0]:
         otherOrder = otherQueue.get()
         if otherOrder[1] in cancelledSell:
-            del cancelledSell[otherOrder[1]]
+            cancelledSell.remove(otherOrder[1])
             s += "Trashed a deleted order! [" + str(otherOrder[1]) + "]\n"
             continue
         if buyRequest.units > otherOrder[2]:
@@ -89,7 +89,7 @@ def addSellReq(sellRequest, reqQueue, otherQueue, cancelledBuy):
     while len(otherQueue.queue) and sellRequest.price <= -otherQueue.queue[0][0]:
         otherOrder = otherQueue.get()
         if otherOrder[1] in cancelledBuy:
-            del cancelledBuy[otherOrder[1]]
+            cancelledBuy.remove(otherOrder[1])
             s += "Trashed a deleted order! [" + str(otherOrder[1]) + "]\n"
             continue
         if sellRequest.units > otherOrder[2]:
@@ -114,8 +114,8 @@ if __name__ == '__main__':
     start = time.time()
     buyQueue = PriorityQueue() #use a dictionary if expanding to multiple stockID change logic accordingly
     sellQueue = PriorityQueue() #use a dictionary if expanding to multiple stockID change logic accordingly
-    cancelledBuy = {} #add an extra layer of nesting if expanding to multiple stockID change logic accordingly
-    cancelledSell = {} #add an extra layer of nesting if expanding to multiple stockID change logic accordingly
+    cancelledBuy = set() #add an extra layer of nesting if expanding to multiple stockID change logic accordingly
+    cancelledSell = set() #add an extra layer of nesting if expanding to multiple stockID change logic accordingly
 
     #Objects Transaction and Response designed with gRPC req/responses in mind
     #gRPC server/client ommited from submission due to performance cost of serialization/deserialization
@@ -134,9 +134,9 @@ if __name__ == '__main__':
                     resp = addSellReq(Transaction(int(items[3]),float(items[4]),int(items[1]), "XYZ"), sellQueue, buyQueue, cancelledBuy)
             else:
                 if items[2] == "B":
-                    cancelledBuy[items[1]] = 1
+                    cancelledBuy.add(int(items[1]))
                 else:
-                    cancelledSell[items[1]] = 1
+                    cancelledSell.add(int(items[1]))
             if(len(resp.transactions)):
                 for transaction in resp.transactions:
                     print(str(transaction.units) + " shares of XYZ were sold at " + str(transaction.price) + " USD")
